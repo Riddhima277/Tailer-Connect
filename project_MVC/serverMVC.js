@@ -16,6 +16,7 @@ app.use(fileuploader());
 app.use(cors());
 connectToMongoDB();
 
+
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use("/profile",     profileRouter);     // profile routes
 app.use("/customer",    customer_pro);      // customer routes
@@ -32,3 +33,5 @@ app.use((req, res) => {
 app.listen(2009, () => {
   console.log("Server Started on : 2009");
 });
+
+module.exports=app;
