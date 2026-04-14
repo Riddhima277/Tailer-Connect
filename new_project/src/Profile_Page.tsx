@@ -63,7 +63,7 @@ const OtpScreen = ({ email, darkMode, onSuccess, onBack }: {
 
   try {
    await axios.post(
-  "http://localhost:2009/profile/verify-otp",
+  "https://tailor-connect-new-fovv.vercel.app//profile/verify-otp",
   { email, otp: code }
 );
 
@@ -79,7 +79,7 @@ const OtpScreen = ({ email, darkMode, onSuccess, onBack }: {
   const handleResend = async () => {
     setResending(true); setError("");
     try {
-      await axios.post("http://localhost:2009/profile/resend-otp", { email });
+      await axios.post("https://tailor-connect-new-fovv.vercel.app//profile/resend-otp", { email });
       setOtp(["","","","","",""]); setResendCooldown(60); inputRefs.current[0]?.focus();
     } catch (err: any) { setError(err.response?.data?.msg || "Failed to resend OTP"); }
     finally { setResending(false); }
@@ -222,7 +222,7 @@ export default function Profile_Page() {
     // ── LOGIN ──
     if (state.isLogin) {
       try {
-        const res = await axios.post("http://localhost:2009/profile/login", { email: state.email, password: state.password });
+        const res = await axios.post("https://tailor-connect-new-fovv.vercel.app//profile/login", { email: state.email, password: state.password });
         const userType: string = res.data.userType || res.data.data?.userType || "";    // ← backend must return userType
         localStorage.setItem("token", res.data.token || "");
         localStorage.setItem("userType", userType);
@@ -239,7 +239,7 @@ export default function Profile_Page() {
     if (!validateContact(state.contact)) { setState({ ...state, error: "Please enter a valid 10-digit contact number" }); return; }
 
     try {
-      const response = await axios.post("http://localhost:2009/profile/send-otp", {
+      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//profile/send-otp", {
         email: state.email, password: state.password, userType: state.userType, contact: state.contact,
       });
       localStorage.setItem("token", response.data.token);

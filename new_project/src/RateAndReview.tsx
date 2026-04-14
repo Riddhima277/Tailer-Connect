@@ -29,7 +29,7 @@ export default function RateAndReview() {
     }
     setLookupLoading(true); setNotFound(false); setNameVisible(false);
     try {
-      const res = await axios.post("http://localhost:2009/review/findTailor", { contact: mobile });
+      const res = await axios.post("https://tailor-connect-new-fovv.vercel.app//review/findTailor", { contact: mobile });
       if (res.data.status && res.data.doc) {
         setTailorName(res.data.doc.name);
         setNameVisible(true);
@@ -47,7 +47,7 @@ export default function RateAndReview() {
     }
     setSubmitLoading(true);
     try {
-      await axios.post("http://localhost:2009/review/create", {
+      await axios.post("https://tailor-connect-new-fovv.vercel.app//review/create", {
         tailorContact: mobile, star: selectedStar, review,
       });
       setTimeout(() => { setSubmitted(true); setSubmitLoading(false); }, 500);

@@ -12,7 +12,7 @@ import { GiSewingMachine, GiSewingNeedle } from "react-icons/gi";
 import { useDarkMode } from "../src/context/DarkModeContext";
 
 // ─── Axios ────────────────────────────────────────────────────────────────────
-const API = axios.create({ baseURL: "http://localhost:2009" });
+const API = axios.create({ baseURL: "https://tailor-connect-new-fovv.vercel.app/" });
 
 const tailorAPI = {
   search: (f: Record<string, string>) => API.post("/find-tailor/search", f),

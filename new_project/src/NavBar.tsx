@@ -27,7 +27,7 @@ export default function NavBar() {
   const handleLogout = async () => {
   try {
     await axios.post(
-      "http://localhost:2009/profile/logout",
+      "https://tailor-connect-new-fovv.vercel.app//profile/logout",
       {},
       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
     );

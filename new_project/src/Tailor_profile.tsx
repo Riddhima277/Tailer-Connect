@@ -141,7 +141,7 @@ useEffect(() => {
       const formData = new FormData();
       formData.append("aadhaarFile", file);
 
-      const res = await axios.post("http://localhost:2009/tailor/extract-aadhaar", formData, {
+      const res = await axios.post("https://tailor-connect-new-fovv.vercel.app//tailor/extract-aadhaar", formData, {
   headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
 });
       if (res.data.status) {
@@ -181,7 +181,7 @@ useEffect(() => {
   const handleSearch = async () => {
     if (!form.email) { alert("Enter email first"); return; }
     try {
-      const response = await axios.post("http://localhost:2009/tailor/find", { email: form.email }, authHeader());
+      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//tailor/find", { email: form.email }, authHeader());
       if (!response.data.status) { alert("Tailor not found"); return; }
       const data = response.data.doc;
       setForm({ ...form, ...data, profilePic: data.profilePic || "", aadhaarPreview: data.aadhaarFile || "", socialLinks: data.socialLinks || [] });
@@ -194,7 +194,7 @@ useEffect(() => {
   if (!form.email) return alert("Enter email to delete");
   try {
     const response = await axios.post(
-      "http://localhost:2009/tailor/delete",
+      "https://tailor-connect-new-fovv.vercel.app//tailor/delete",
       { email: form.email },
       authHeader()
     );
@@ -256,7 +256,7 @@ useEffect(() => {
         formData.append("profilePic", blob);
       }
       formData.append("socialLinks", JSON.stringify(form.socialLinks));
-      const url = !isSaved ? "http://localhost:2009/tailor/create" : "http://localhost:2009/tailor/update";
+      const url = !isSaved ? "https://tailor-connect-new-fovv.vercel.app//tailor/create" : "https://tailor-connect-new-fovv.vercel.app//tailor/update";
      await axios.post(url, formData, {
   headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
 });

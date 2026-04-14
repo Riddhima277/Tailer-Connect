@@ -197,7 +197,7 @@ export default function CustomerProfile() {
     frmData.append("gender", customer.gender);
     if (customer.profilePic) frmData.append("profilepic", customer.profilePic);
     try {
-      const response = await axios.post("http://localhost:2009/customer/create", frmData, {
+      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//customer/create", frmData, {
   headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" }
 });
       alert(response.data.msg);
@@ -208,7 +208,7 @@ export default function CustomerProfile() {
   const handleFind = async () => {
     if (!customer.email) return alert("Enter email to search");
     try {
-      const response = await axios.post("http://localhost:2009/customer/find", { email: customer.email }, authHeader());
+      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//customer/find", { email: customer.email }, authHeader());
       if (response.data.status) {
         const data = response.data.doc;
         setCustomer({ email: data.email, name: data.name, address: data.address, city: data.city, state: data.state, gender: data.gender, profilePic: null });
@@ -234,7 +234,7 @@ export default function CustomerProfile() {
     frmData.append("gender", customer.gender);
     if (customer.profilePic) frmData.append("profilepic", customer.profilePic);
     try {
-     const response = await axios.post("http://localhost:2009/customer/update", frmData, {
+     const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//customer/update", frmData, {
   headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" }
 });
       alert(response.data.msg);
@@ -244,7 +244,7 @@ export default function CustomerProfile() {
   const handleDelete = async () => {
     if (!customer.email) return alert("Enter email to delete");
     try {
-      const response = await axios.post("http://localhost:2009/customer/delete", { email: customer.email }, authHeader());
+      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//customer/delete", { email: customer.email }, authHeader());
       alert(response.data.msg);
       setCustomer({ email: "", name: "", address: "", city: "", state: "", gender: "", profilePic: null });
       setPrev(defaultAvatar);
