@@ -1,4 +1,4 @@
-// config/mail_template.js
+ // config/mail_template.js
 
 function wrap(content) {
   return `

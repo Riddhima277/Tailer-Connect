@@ -1,6 +1,6 @@
 // controllers/profileController.js
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+//require('dotenv').config();
 var ProfileColRef = require("../models/ProfileModel");
 var transporter = require("../config/node_mailer");
 var {
@@ -68,7 +68,7 @@ otpStore[email] = {
         const name = email.split("@")[0];
         const tmpl = otpTemplate(name, otp);
 
-        let jtoken = jwt.sign({ email: email }, process.env.sec_key, { expiresIn: "10m" });
+        let jtoken = jwt.sign({ email: email }, process.env.SEC_KEY, { expiresIn: "10m" });
         console.log(jtoken);
 
         transporter.sendMail({
@@ -248,7 +248,7 @@ function login(req, res) {
 
       let token = jwt.sign(
   { email: user.email, userType: user.userType },
-  process.env.sec_key,
+  process.env.SEC_KEY,
   { expiresIn: "10m" }
 );
 return res.status(200).json({

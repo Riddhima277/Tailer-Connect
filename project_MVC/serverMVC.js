@@ -1,3 +1,4 @@
+require("dotenv").config();
 var express = require("express");
 var fileuploader = require("express-fileupload");
 var profileRouter     = require("./routers/profileRouter");
