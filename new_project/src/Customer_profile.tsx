@@ -31,7 +31,7 @@ export default function CustomerProfile() {
   //const [darkMode, setDarkMode] = useState(false);
   const { darkMode, setDarkMode } = useDarkMode();
   const [isExistingCustomer, setIsExistingCustomer] = useState(false);
-  const [mounted] = useState(true);
+  //const [mounted] = useState(true);
 
   const [customer, setCustomer] = useState({
     email: "",

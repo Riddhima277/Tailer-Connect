@@ -59,8 +59,6 @@ const OtpScreen = ({ email, darkMode, onSuccess, onBack }: {
 
   setLoading(true);
 
-  //const token = localStorage.getItem("token"); // ✅ keep this
-
   try {
    await axios.post(
   "https://tailor-connect-new-fovv.vercel.app//profile/verify-otp",
@@ -70,7 +68,7 @@ const OtpScreen = ({ email, darkMode, onSuccess, onBack }: {
     setSuccess(true);
     setTimeout(() => onSuccess(), 1500);
 
-  } catch (err) {
+  } catch (err: any) {
     setError(err.response?.data?.msg || "Invalid OTP. Please try again.");
   } finally {
     setLoading(false);
@@ -170,11 +168,10 @@ const TailorIllustration = ({ darkMode }: { darkMode: boolean }) => (
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function Profile_Page() {
-  const navigate = useNavigate();   // ← used for role-based routing
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [showPassword, setShowPassword] = useState(false);
-  //const [darkMode, setDarkMode] = useState(false);
   const { darkMode, setDarkMode } = useDarkMode();
   const [animating, setAnimating] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -185,7 +182,6 @@ export default function Profile_Page() {
     isLogin: false, email: "", password: "", userType: "", contact: "", error: "",
   });
 
-  // Read mode passed from Index page (login / signup)
   useEffect(() => {
     const mode = (location.state as any)?.mode;
     if (mode === "login") setState((prev) => ({ ...prev, isLogin: true }));
@@ -207,7 +203,6 @@ export default function Profile_Page() {
   const validatePassword = (pw: string) => /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/.test(pw);
   const validateContact = (c: string) => /^[0-9]{10}$/.test(c);
 
-  // ── Central routing function based on userType ──────────────────────────────
   const routeByUserType = (userType: string) => {
     if (userType === "customer") navigate("/CustomerProfile");
     else if (userType === "tailor")  navigate("/TailorProfile");
@@ -219,22 +214,20 @@ export default function Profile_Page() {
     if (!validateEmail(state.email))    { setState({ ...state, error: "Please enter a valid email address" }); return; }
     if (!validatePassword(state.password)) { setState({ ...state, error: "Password: 8+ chars, 1 number & 1 special character" }); return; }
 
-    // ── LOGIN ──
     if (state.isLogin) {
       try {
         const res = await axios.post("https://tailor-connect-new-fovv.vercel.app//profile/login", { email: state.email, password: state.password });
-        const userType: string = res.data.userType || res.data.data?.userType || "";    // ← backend must return userType
+        const userType: string = res.data.userType || res.data.data?.userType || "";
         localStorage.setItem("token", res.data.token || "");
         localStorage.setItem("userType", userType);
         localStorage.setItem("userEmail", state.email);
-        routeByUserType(userType);                             // ← navigate by role
+        routeByUserType(userType);
       } catch (err: any) {
         setState({ ...state, error: err.response?.data?.msg || "Something went wrong" });
       }
       return;
     }
 
-    // ── SIGNUP ──
     if (!state.userType)               { setState({ ...state, error: "Please select a user type" }); return; }
     if (!validateContact(state.contact)) { setState({ ...state, error: "Please enter a valid 10-digit contact number" }); return; }
 
@@ -243,7 +236,7 @@ export default function Profile_Page() {
         email: state.email, password: state.password, userType: state.userType, contact: state.contact,
       });
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("userType", state.userType);  // ← save so OTP success can read it
+      localStorage.setItem("userType", state.userType);
       setPendingEmail(state.email);
       setScreen("otp");
     } catch (err: any) {
@@ -251,7 +244,6 @@ export default function Profile_Page() {
     }
   };
 
-  // ── After OTP verified: read saved userType and navigate ────────────────────
   const handleOtpSuccess = () => {
     const userType = localStorage.getItem("userType") || "";
     routeByUserType(userType);
@@ -314,27 +306,30 @@ export default function Profile_Page() {
 
         {/* RIGHT PANEL */}
         <div className="lg:w-7/12 w-full p-8 relative">
-       <div className="flex justify-end gap-2 mb-4">
-  {/* Home button */}
-  <button
-    onClick={() => navigate("/")}
-    className="mode-btn w-10 h-10 rounded-full flex items-center justify-center"
-    style={{
-      background: dm ? "rgba(196,154,44,0.14)" : "rgba(146,64,14,0.07)",
-      border: dm ? "1px solid rgba(196,154,44,0.28)" : "1px solid rgba(146,64,14,0.14)",
-      color: dm ? "#fbbf24" : "#92400e",
-      fontSize: "16px",
-    }}
-  >
-    <FaHome size={14} />
-  </button>
+          <div className="flex justify-end gap-2 mb-4">
+            {/* Home button */}
+            <button
+              onClick={() => navigate("/")}
+              className="mode-btn w-10 h-10 rounded-full flex items-center justify-center"
+              style={{
+                background: dm ? "rgba(196,154,44,0.14)" : "rgba(146,64,14,0.07)",
+                border: dm ? "1px solid rgba(196,154,44,0.28)" : "1px solid rgba(146,64,14,0.14)",
+                color: dm ? "#fbbf24" : "#92400e",
+                fontSize: "16px",
+              }}
+            >
+              <FaHome size={14} />
+            </button>
 
-  {/* Dark mode toggle */}
-  <button onClick={() => setDarkMode((prev) => !prev)} className="mode-btn w-10 h-10 rounded-full flex items-center justify-center"
-    style={{background:dm?"rgba(196,154,44,0.14)":"rgba(146,64,14,0.07)",border:dm?"1px solid rgba(196,154,44,0.28)":"1px solid rgba(146,64,14,0.14)",color:dm?"#fbbf24":"#92400e",fontSize:"16px"}}>
-    {dm?<FaSun/>:<FaMoon/>}
-  </button>
-</div>
+            {/* Dark mode toggle — FIXED: use !dm instead of (prev) => !prev */}
+            <button
+              onClick={() => setDarkMode(!dm)}
+              className="mode-btn w-10 h-10 rounded-full flex items-center justify-center"
+              style={{background:dm?"rgba(196,154,44,0.14)":"rgba(146,64,14,0.07)",border:dm?"1px solid rgba(196,154,44,0.28)":"1px solid rgba(146,64,14,0.14)",color:dm?"#fbbf24":"#92400e",fontSize:"16px"}}
+            >
+              {dm?<FaSun/>:<FaMoon/>}
+            </button>
+          </div>
 
           <div className="flex items-center gap-2 mb-6 lg:hidden">
             <FaCut style={{color:"#c49a2c"}}/>
@@ -431,6 +426,5 @@ export default function Profile_Page() {
         </div>
       </div>
     </div>
-        
   );
 }
