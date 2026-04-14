@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   FaCut, FaSearch, FaStar, FaArrowRight, FaCheckCircle,
-  FaMapMarkerAlt, FaUsers, FaThumbsUp, FaInstagram, FaLinkedin,
+   FaInstagram, FaLinkedin,
   FaCode, FaHeart,
 } from "react-icons/fa";
 import { GiSewingMachine, GiSewingNeedle } from "react-icons/gi";
