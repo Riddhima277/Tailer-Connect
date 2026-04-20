@@ -9,6 +9,9 @@ import {
 import { GiSewingNeedle, GiSewingString, GiSewingMachine } from "react-icons/gi";
 import { useDarkMode } from "../src/context/DarkModeContext";
 
+// ─── API Base URL ─────────────────────────────────────────────────────────────
+const API_BASE = "https://tailor-connect-new-fovv.vercel.app";
+
 interface AuthState {
   isLogin: boolean; email: string; password: string;
   userType: string; contact: string; error: string;
@@ -49,38 +52,32 @@ const OtpScreen = ({ email, darkMode, onSuccess, onBack }: {
     const updated = [...otp]; digits.split("").forEach((d, i) => { updated[i] = d; });
     setOtp(updated); inputRefs.current[Math.min(digits.length, 5)]?.focus();
   };
+
   const handleVerify = async () => {
-  const code = otp.join("");
+    const code = otp.join("");
+    if (code.length < 6) { setError("Please enter the full 6-digit OTP"); return; }
+    setLoading(true);
+    try {
+      await axios.post(`${API_BASE}/profile/verify-otp`, { email, otp: code });
+      setSuccess(true);
+      setTimeout(() => onSuccess(), 1500);
+    } catch (err: any) {
+      setError(err.response?.data?.msg || "Invalid OTP. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (code.length < 6) {
-    setError("Please enter the full 6-digit OTP");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-   await axios.post(
-  "https://tailor-connect-new-fovv.vercel.app//profile/verify-otp",
-  { email, otp: code }
-);
-
-    setSuccess(true);
-    setTimeout(() => onSuccess(), 1500);
-
-  } catch (err: any) {
-    setError(err.response?.data?.msg || "Invalid OTP. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
   const handleResend = async () => {
     setResending(true); setError("");
     try {
-      await axios.post("https://tailor-connect-new-fovv.vercel.app//profile/resend-otp", { email });
+      await axios.post(`${API_BASE}/profile/resend-otp`, { email });
       setOtp(["","","","","",""]); setResendCooldown(60); inputRefs.current[0]?.focus();
-    } catch (err: any) { setError(err.response?.data?.msg || "Failed to resend OTP"); }
-    finally { setResending(false); }
+    } catch (err: any) {
+      setError(err.response?.data?.msg || "Failed to resend OTP");
+    } finally {
+      setResending(false);
+    }
   };
 
   return (
@@ -205,18 +202,21 @@ export default function Profile_Page() {
 
   const routeByUserType = (userType: string) => {
     if (userType === "customer") navigate("/CustomerProfile");
-    else if (userType === "tailor")  navigate("/TailorProfile");
+    else if (userType === "tailor") navigate("/TailorProfile");
     else navigate("/");
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validateEmail(state.email))    { setState({ ...state, error: "Please enter a valid email address" }); return; }
+    if (!validateEmail(state.email))       { setState({ ...state, error: "Please enter a valid email address" }); return; }
     if (!validatePassword(state.password)) { setState({ ...state, error: "Password: 8+ chars, 1 number & 1 special character" }); return; }
 
     if (state.isLogin) {
       try {
-        const res = await axios.post("https://tailor-connect-new-fovv.vercel.app//profile/login", { email: state.email, password: state.password });
+        const res = await axios.post(`${API_BASE}/profile/login`, {
+          email: state.email,
+          password: state.password,
+        });
         const userType: string = res.data.userType || res.data.data?.userType || "";
         localStorage.setItem("token", res.data.token || "");
         localStorage.setItem("userType", userType);
@@ -228,12 +228,15 @@ export default function Profile_Page() {
       return;
     }
 
-    if (!state.userType)               { setState({ ...state, error: "Please select a user type" }); return; }
-    if (!validateContact(state.contact)) { setState({ ...state, error: "Please enter a valid 10-digit contact number" }); return; }
+    if (!state.userType)                   { setState({ ...state, error: "Please select a user type" }); return; }
+    if (!validateContact(state.contact))   { setState({ ...state, error: "Please enter a valid 10-digit contact number" }); return; }
 
     try {
-      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//profile/send-otp", {
-        email: state.email, password: state.password, userType: state.userType, contact: state.contact,
+      const response = await axios.post(`${API_BASE}/profile/send-otp`, {
+        email: state.email,
+        password: state.password,
+        userType: state.userType,
+        contact: state.contact,
       });
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("userType", state.userType);
@@ -307,25 +310,17 @@ export default function Profile_Page() {
         {/* RIGHT PANEL */}
         <div className="lg:w-7/12 w-full p-8 relative">
           <div className="flex justify-end gap-2 mb-4">
-            {/* Home button */}
             <button
               onClick={() => navigate("/")}
               className="mode-btn w-10 h-10 rounded-full flex items-center justify-center"
-              style={{
-                background: dm ? "rgba(196,154,44,0.14)" : "rgba(146,64,14,0.07)",
-                border: dm ? "1px solid rgba(196,154,44,0.28)" : "1px solid rgba(146,64,14,0.14)",
-                color: dm ? "#fbbf24" : "#92400e",
-                fontSize: "16px",
-              }}
+              style={{ background:dm?"rgba(196,154,44,0.14)":"rgba(146,64,14,0.07)", border:dm?"1px solid rgba(196,154,44,0.28)":"1px solid rgba(146,64,14,0.14)", color:dm?"#fbbf24":"#92400e", fontSize:"16px" }}
             >
               <FaHome size={14} />
             </button>
-
-            {/* Dark mode toggle — FIXED: use !dm instead of (prev) => !prev */}
             <button
               onClick={() => setDarkMode(!dm)}
               className="mode-btn w-10 h-10 rounded-full flex items-center justify-center"
-              style={{background:dm?"rgba(196,154,44,0.14)":"rgba(146,64,14,0.07)",border:dm?"1px solid rgba(196,154,44,0.28)":"1px solid rgba(146,64,14,0.14)",color:dm?"#fbbf24":"#92400e",fontSize:"16px"}}
+              style={{ background:dm?"rgba(196,154,44,0.14)":"rgba(146,64,14,0.07)", border:dm?"1px solid rgba(196,154,44,0.28)":"1px solid rgba(146,64,14,0.14)", color:dm?"#fbbf24":"#92400e", fontSize:"16px" }}
             >
               {dm?<FaSun/>:<FaMoon/>}
             </button>
