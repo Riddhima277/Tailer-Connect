@@ -11,8 +11,11 @@ import {
 import { GiSewingMachine, GiSewingNeedle } from "react-icons/gi";
 import { useDarkMode } from "../src/context/DarkModeContext";
 
+// ─── API Base URL ─────────────────────────────────────────────────────────────
+const API_BASE = "https://tailor-connect-new-fovv.vercel.app";
+
 // ─── Axios ────────────────────────────────────────────────────────────────────
-const API = axios.create({ baseURL: "https://tailor-connect-new-fovv.vercel.app/" });
+const API = axios.create({ baseURL: API_BASE });
 
 const tailorAPI = {
   search: (f: Record<string, string>) => API.post("/find-tailor/search", f),
@@ -113,8 +116,7 @@ const ITEMS_PER_PAGE = 6;
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function FindTailor() {
- // const [darkMode, setDarkMode]           = useState(false);
- const { darkMode, setDarkMode } = useDarkMode();
+  const { darkMode, setDarkMode } = useDarkMode();
   const [city, setCity]                   = useState("");
   const [category, setCategory]           = useState("");
   const [speciality, setSpeciality]       = useState("");
@@ -471,8 +473,8 @@ export default function FindTailor() {
 
               {/* Avatar overlap */}
               <div className="px-6" style={{ marginTop: "10px", marginBottom: "12px", position: "relative", zIndex: 10 }}>
-  <div style={{ width: 72, height: 72, borderRadius: "50%", overflow: "hidden",
-    border: "3px solid rgba(196,154,44,0.5)", boxShadow: "0 6px 20px rgba(0,0,0,0.3)" }}>
+                <div style={{ width: 72, height: 72, borderRadius: "50%", overflow: "hidden",
+                  border: "3px solid rgba(196,154,44,0.5)", boxShadow: "0 6px 20px rgba(0,0,0,0.3)" }}>
                   <img src={detailTailor.profilePic && detailTailor.profilePic !== "nopic.jpg" ? detailTailor.profilePic : defaultAvatar} alt={detailTailor.name} style={{ width: "100%", height: "100%", objectFit: "cover" }}/>
                 </div>
               </div>
@@ -576,7 +578,6 @@ export default function FindTailor() {
                 <div style={{ marginTop: "20px" }}>
                   <div style={{ height: "1px", background: dm ? "rgba(255,255,255,0.07)" : "rgba(196,154,44,0.12)", marginBottom: "14px" }}/>
 
-                  {/* Section header */}
                   <div className="flex items-center justify-between mb-3">
                     <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: dm ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)", margin: 0 }}>
                       Customer Reviews ({modalReviews.length})
@@ -591,7 +592,6 @@ export default function FindTailor() {
                     )}
                   </div>
 
-                  {/* Loading spinner */}
                   {reviewsLoading && (
                     <div className="flex justify-center py-5">
                       <div className="w-5 h-5 rounded-full border-2"
@@ -599,7 +599,6 @@ export default function FindTailor() {
                     </div>
                   )}
 
-                  {/* Empty state */}
                   {!reviewsLoading && modalReviews.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-6 rounded-xl"
                       style={{ background: dm ? "rgba(255,255,255,0.02)" : "rgba(196,154,44,0.03)", border: dm ? "1px dashed rgba(255,255,255,0.08)" : "1px dashed rgba(196,154,44,0.2)" }}>
@@ -610,28 +609,17 @@ export default function FindTailor() {
                     </div>
                   )}
 
-                  {/* Reviews list */}
                   {!reviewsLoading && modalReviews.length > 0 && (
-                    <div
-                      className="reviews-scroll"
-                      style={{ display: "flex", flexDirection: "column", gap: "10px", maxHeight: "260px", overflowY: "auto", paddingRight: "4px" }}
-                    >
+                    <div className="reviews-scroll" style={{ display: "flex", flexDirection: "column", gap: "10px", maxHeight: "260px", overflowY: "auto", paddingRight: "4px" }}>
                       {modalReviews.map((r: ReviewDoc) => (
-                        <motion.div
-                          key={r._id}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.25 }}
-                          style={{ borderRadius: "10px", padding: "10px 12px", background: dm ? "rgba(255,255,255,0.04)" : "rgba(196,154,44,0.04)", border: dm ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(196,154,44,0.1)" }}
-                        >
-                          {/* Stars + date row */}
+                        <motion.div key={r._id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
+                          style={{ borderRadius: "10px", padding: "10px 12px", background: dm ? "rgba(255,255,255,0.04)" : "rgba(196,154,44,0.04)", border: dm ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(196,154,44,0.1)" }}>
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: r.review ? "6px" : "0" }}>
                             <RatingStars rating={r.star} size={11}/>
                             <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "10px", color: dm ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.3)" }}>
                               {new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                             </span>
                           </div>
-                          {/* Review text */}
                           {r.review && (
                             <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "13px", fontStyle: "italic", color: dm ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.55)", lineHeight: 1.55, margin: 0 }}>
                               "{r.review}"
@@ -642,8 +630,6 @@ export default function FindTailor() {
                     </div>
                   )}
                 </div>
-                {/* ─── END REVIEWS SECTION ─────────────────────────────── */}
-
               </div>
             </motion.div>
           </motion.div>
@@ -689,8 +675,8 @@ function TailorCard({ tailor, dm, saved, onSave, onView }: {
 
       {/* Avatar */}
       <div className="px-4" style={{ marginTop: "8px", marginBottom: "8px", position: "relative", zIndex: 10 }}>
-  <div style={{ width: 56, height: 56, borderRadius: "50%", overflow: "hidden",
-    border: "2.5px solid rgba(196,154,44,0.5)", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>
+        <div style={{ width: 56, height: 56, borderRadius: "50%", overflow: "hidden",
+          border: "2.5px solid rgba(196,154,44,0.5)", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>
           <img
             src={tailor.profilePic && tailor.profilePic !== "nopic.jpg" ? tailor.profilePic : defaultAvatar}
             alt={tailor.name} className="w-full h-full object-cover"
@@ -699,7 +685,6 @@ function TailorCard({ tailor, dm, saved, onSave, onView }: {
       </div>
 
       <div className="px-4 pb-4">
-        {/* Name + badge */}
         <div className="mb-1">
           <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "17px", fontWeight: 700, color: dm ? "white" : "#1c0a00", lineHeight: 1.2 }}>{tailor.name}</h3>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md mt-1"
@@ -708,14 +693,12 @@ function TailorCard({ tailor, dm, saved, onSave, onView }: {
           </span>
         </div>
 
-        {/* Rating */}
         <div className="flex items-center gap-2 mt-2 mb-2">
           <RatingStars rating={rating} size={11}/>
           <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "12px", fontWeight: 600, color: "#f59e0b" }}>{rating.toFixed(1)}</span>
           <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "10px", color: dm ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>({reviews} reviews)</span>
         </div>
 
-        {/* Speciality */}
         {tailor.speciality && (
           <p className="flex items-center gap-1.5 mb-2" style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "11px", color: dm ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)" }}>
             <GiSewingNeedle size={10} color="#c49a2c"/> {tailor.speciality}
@@ -724,7 +707,6 @@ function TailorCard({ tailor, dm, saved, onSave, onView }: {
 
         <div style={{ height: "1px", background: dm ? "rgba(255,255,255,0.06)" : "rgba(196,154,44,0.1)", margin: "8px 0" }}/>
 
-        {/* Info */}
         <div className="grid grid-cols-2 gap-1.5 mb-3">
           <div className="flex items-center gap-1.5">
             <FaMapMarkerAlt size={9} color="#c49a2c"/>
@@ -740,7 +722,6 @@ function TailorCard({ tailor, dm, saved, onSave, onView }: {
           </div>
         </div>
 
-        {/* Social links */}
         {tailor.socialLinks?.length > 0 && (
           <div className="flex gap-1.5 mb-3">
             {tailor.socialLinks.map((l,i) => (
@@ -753,7 +734,6 @@ function TailorCard({ tailor, dm, saved, onSave, onView }: {
           </div>
         )}
 
-        {/* CTA buttons */}
         <div className="flex gap-2">
           <motion.button onClick={onView} whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98 }}
             className="flex items-center justify-center gap-1.5 flex-1 rounded-xl py-2.5"
