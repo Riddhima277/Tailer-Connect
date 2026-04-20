@@ -11,6 +11,9 @@ import {
 import { GiSewingNeedle, GiSewingMachine, GiSewingString } from "react-icons/gi";
 import { useDarkMode } from "../src/context/DarkModeContext";
 
+// ─── API Base URL ─────────────────────────────────────────────────────────────
+const API_BASE = "https://tailor-connect-new-fovv.vercel.app";
+
 const platformOptions = ["Website", "Instagram", "Facebook", "YouTube"];
 
 const platformIcons: Record<string, React.ReactNode> = {
@@ -89,7 +92,6 @@ const TABS = ["personal", "professional", "contact"] as const;
 type Tab = typeof TABS[number];
 
 export default function ProfileTailor() {
-  //const [darkMode, setDarkMode] = useState(false);
   const { darkMode, setDarkMode } = useDarkMode();
   const [form, setForm] = useState<FormType>({
     profilePic: "", email: "", name: "", contact: "",
@@ -101,20 +103,21 @@ export default function ProfileTailor() {
   const [isSaved, setIsSaved] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<Tab>("personal");
-  const [ocrLoading, setOcrLoading] = useState(false); // ── new: OCR loading state
+  const [ocrLoading, setOcrLoading] = useState(false);
 
   const dm = darkMode;
-  const authHeader = () => ({
-  headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-});
-useEffect(() => {
-  const savedEmail = localStorage.getItem("userEmail");
-  if (savedEmail) {
-    setForm((prev) => ({ ...prev, email: savedEmail }));
-  }
-}, []);
 
-  // ── All handlers — UNCHANGED ──
+  const authHeader = () => ({
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("userEmail");
+    if (savedEmail) {
+      setForm((prev) => ({ ...prev, email: savedEmail }));
+    }
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
@@ -127,23 +130,18 @@ useEffect(() => {
     setForm({ ...form, profilePic: URL.createObjectURL(file) });
   };
 
-  // ── CHANGED: OCR now calls backend instead of Tesseract ──
   const handleAadhaarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Show local preview immediately
     const previewURL = URL.createObjectURL(file);
     setForm((prev) => ({ ...prev, aadhaarFile: file, aadhaarPreview: previewURL }));
     setOcrLoading(true);
-
     try {
       const formData = new FormData();
       formData.append("aadhaarFile", file);
-
-      const res = await axios.post("https://tailor-connect-new-fovv.vercel.app//tailor/extract-aadhaar", formData, {
-  headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
-});
+      const res = await axios.post(`${API_BASE}/tailor/extract-aadhaar`, formData, {
+        headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
+      });
       if (res.data.status) {
         const { extracted, previewUrl } = res.data;
         setForm((prev) => ({
@@ -161,7 +159,6 @@ useEffect(() => {
       setOcrLoading(false);
     }
   };
-  // ─────────────────────────────────────────────────────────
 
   const handlePlatformSelect = (platform: string) => {
     if (form.socialLinks.find((p) => p.platform === platform)) return;
@@ -181,36 +178,35 @@ useEffect(() => {
   const handleSearch = async () => {
     if (!form.email) { alert("Enter email first"); return; }
     try {
-      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//tailor/find", { email: form.email }, authHeader());
+      const response = await axios.post(`${API_BASE}/tailor/find`, { email: form.email }, authHeader());
       if (!response.data.status) { alert("Tailor not found"); return; }
       const data = response.data.doc;
       setForm({ ...form, ...data, profilePic: data.profilePic || "", aadhaarPreview: data.aadhaarFile || "", socialLinks: data.socialLinks || [] });
       setIsSaved(true);
       alert("Profile Loaded Successfully!");
-    } catch (error: any) { console.log(error.response?.data); alert("Search failed"); }
+    } catch (error: any) {
+      console.log(error.response?.data);
+      alert("Search failed");
+    }
   };
 
   const handleDelete = async () => {
-  if (!form.email) return alert("Enter email to delete");
-  try {
-    const response = await axios.post(
-      "https://tailor-connect-new-fovv.vercel.app//tailor/delete",
-      { email: form.email },
-      authHeader()
-    );
-    alert(response.data.msg);
-    setIsSaved(false);
-    setForm({
-      profilePic: "", email: "", name: "", contact: "",
-      aadhaarFile: null, aadhaarPreview: "", address: "", city: "",
-      aadhaarNo: "", category: "", speciality: "", dob: "", since: "",
-      gender: "", workType: "", shopAddress: "", otherInfo: "",
-      socialLinks: [], shopCity: "",
-    });
-  } catch (error: any) {
-    alert(error.response?.data?.msg || "Error deleting profile");
-  }
-};
+    if (!form.email) return alert("Enter email to delete");
+    try {
+      const response = await axios.post(`${API_BASE}/tailor/delete`, { email: form.email }, authHeader());
+      alert(response.data.msg);
+      setIsSaved(false);
+      setForm({
+        profilePic: "", email: "", name: "", contact: "",
+        aadhaarFile: null, aadhaarPreview: "", address: "", city: "",
+        aadhaarNo: "", category: "", speciality: "", dob: "", since: "",
+        gender: "", workType: "", shopAddress: "", otherInfo: "",
+        socialLinks: [], shopCity: "",
+      });
+    } catch (error: any) {
+      alert(error.response?.data?.msg || "Error deleting profile");
+    }
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -256,16 +252,23 @@ useEffect(() => {
         formData.append("profilePic", blob);
       }
       formData.append("socialLinks", JSON.stringify(form.socialLinks));
-      const url = !isSaved ? "https://tailor-connect-new-fovv.vercel.app//tailor/create" : "https://tailor-connect-new-fovv.vercel.app//tailor/update";
-     await axios.post(url, formData, {
-  headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
-});
+
+      const url = !isSaved
+        ? `${API_BASE}/tailor/create`
+        : `${API_BASE}/tailor/update`;
+
+      await axios.post(url, formData, {
+        headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
+      });
+
       if (!isSaved) { alert("Profile Saved Successfully!"); setIsSaved(true); }
       else alert("Profile Updated Successfully!");
-    } catch (error: any) { console.log(error.response?.data); alert(error.response?.data?.msg || "Something went wrong!"); }
+    } catch (error: any) {
+      console.log(error.response?.data);
+      alert(error.response?.data?.msg || "Something went wrong!");
+    }
   };
 
-  // ── Shared input styles ──
   const inputStyle: React.CSSProperties = {
     background: dm ? "rgba(255,255,255,0.05)" : "rgba(146,64,14,0.04)",
     border: `1px solid ${dm ? "rgba(255,255,255,0.1)" : "rgba(196,154,44,0.25)"}`,
@@ -559,7 +562,6 @@ useEffect(() => {
 
                 {activeTab === "personal" && (
                   <motion.div key="personal" variants={tabVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-
                     <div>
                       <label className="lbl" style={{ color: dm ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.4)" }}>Full Name *</label>
                       <div className="relative">
@@ -588,21 +590,17 @@ useEffect(() => {
                       </div>
                     </div>
 
-                    {/* ── AADHAAR SECTION — OCR loading indicator added ── */}
                     <div className="rounded-xl p-4" style={{ background: dm ? "rgba(196,154,44,0.06)" : "rgba(196,154,44,0.05)", border: dm ? "1px solid rgba(196,154,44,0.15)" : "1px solid rgba(196,154,44,0.15)" }}>
                       <label className="lbl mb-3" style={{ color: dm ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.4)" }}>
                         <FaIdCard className="inline mr-1.5" size={11} style={{ color: "#c49a2c" }} />
                         Aadhaar Verification
                       </label>
-
                       <div className="flex items-center gap-3 mb-3">
                         <label className="action-btn cursor-pointer text-xs px-4 py-2"
                           style={{ background: "linear-gradient(135deg,#c49a2c,#92400e)", color: "white", fontSize: "11px", opacity: ocrLoading ? 0.6 : 1 }}>
                           {ocrLoading ? "Scanning..." : "Upload Aadhaar"}
                           <input type="file" hidden onChange={handleAadhaarUpload} disabled={ocrLoading} />
                         </label>
-
-                        {/* OCR loading spinner */}
                         {ocrLoading && (
                           <div className="flex items-center gap-2">
                             <div className="ocr-spin w-4 h-4 rounded-full border-2"
@@ -612,7 +610,6 @@ useEffect(() => {
                             </span>
                           </div>
                         )}
-
                         {form.aadhaarPreview && !ocrLoading && (
                           <motion.img
                             initial={{ opacity: 0, scale: 0.9 }}
@@ -623,7 +620,6 @@ useEffect(() => {
                           />
                         )}
                       </div>
-
                       <div>
                         <label className="lbl" style={{ color: dm ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.4)" }}>Aadhaar Number *</label>
                         <div className="relative">
