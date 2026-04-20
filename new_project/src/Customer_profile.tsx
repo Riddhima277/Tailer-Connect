@@ -19,6 +19,9 @@ import { BsSun, BsMoon } from "react-icons/bs";
 import { GiSewingMachine } from "react-icons/gi";
 import { useDarkMode } from "../src/context/DarkModeContext";
 
+// ─── API Base URL ─────────────────────────────────────────────────────────────
+const API_BASE = "https://tailor-connect-new-fovv.vercel.app";
+
 const STATES = [
   "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh",
   "Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka",
@@ -28,10 +31,8 @@ const STATES = [
 ];
 
 export default function CustomerProfile() {
-  //const [darkMode, setDarkMode] = useState(false);
   const { darkMode, setDarkMode } = useDarkMode();
   const [isExistingCustomer, setIsExistingCustomer] = useState(false);
-  //const [mounted] = useState(true);
 
   const [customer, setCustomer] = useState({
     email: "",
@@ -42,15 +43,17 @@ export default function CustomerProfile() {
     gender: "",
     profilePic: null as File | null,
   });
-    const authHeader = () => ({
+
+  const authHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
   });
+
   useEffect(() => {
-  const savedEmail = localStorage.getItem("userEmail");
-  if (savedEmail) {
-    setCustomer((prev) => ({ ...prev, email: savedEmail }));
-  }
-}, []);
+    const savedEmail = localStorage.getItem("userEmail");
+    if (savedEmail) {
+      setCustomer((prev) => ({ ...prev, email: savedEmail }));
+    }
+  }, []);
 
   const defaultAvatar = `data:image/svg+xml;utf8,${encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
@@ -75,70 +78,38 @@ export default function CustomerProfile() {
       <circle cx="100" cy="100" r="100"/>
     </clipPath>
   </defs>
-
-  <!-- Background -->
   <circle cx="100" cy="100" r="100" fill="url(#bgGrad)"/>
-
-  <!-- Subtle pattern rings -->
   <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(196,154,44,0.08)" stroke-width="1"/>
   <circle cx="100" cy="100" r="75" fill="none" stroke="rgba(196,154,44,0.06)" stroke-width="1"/>
-
-  <!-- Body / shirt -->
   <ellipse cx="100" cy="175" rx="52" ry="38" fill="url(#shirtGrad)" clip-path="url(#circle)"/>
   <ellipse cx="100" cy="168" rx="40" ry="30" fill="url(#shirtGrad)" clip-path="url(#circle)"/>
-
-  <!-- Collar -->
   <path d="M82 148 Q100 158 118 148 L114 162 Q100 170 86 162 Z" fill="#78350f" clip-path="url(#circle)"/>
   <path d="M100 150 L94 165 L100 162 L106 165 Z" fill="#92400e" clip-path="url(#circle)"/>
-
-  <!-- Neck -->
   <rect x="91" y="128" width="18" height="24" rx="9" fill="url(#skinGrad)"/>
-
-  <!-- Head -->
   <ellipse cx="100" cy="112" rx="34" ry="36" fill="url(#skinGrad)"/>
-
-  <!-- Hair -->
   <ellipse cx="100" cy="82" rx="34" ry="16" fill="#3d2008"/>
   <ellipse cx="68" cy="100" rx="8" ry="14" fill="#3d2008"/>
   <ellipse cx="132" cy="100" rx="8" ry="14" fill="#3d2008"/>
   <path d="M66 94 Q68 78 100 76 Q132 78 134 94 Q130 80 100 78 Q70 80 66 94Z" fill="#4a2810"/>
-
-  <!-- Eyes -->
   <ellipse cx="88" cy="110" rx="6" ry="7" fill="white"/>
   <ellipse cx="112" cy="110" rx="6" ry="7" fill="white"/>
   <ellipse cx="89" cy="111" rx="4" ry="4.5" fill="#3d2008"/>
   <ellipse cx="113" cy="111" rx="4" ry="4.5" fill="#3d2008"/>
   <circle cx="90" cy="109" r="1.5" fill="white" opacity="0.9"/>
   <circle cx="114" cy="109" r="1.5" fill="white" opacity="0.9"/>
-
-  <!-- Eyebrows -->
   <path d="M82 103 Q88 100 94 102" stroke="#3d2008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
   <path d="M106 102 Q112 100 118 103" stroke="#3d2008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-
-  <!-- Nose -->
   <path d="M98 114 Q96 121 100 122 Q104 121 102 114" stroke="#d4956a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-
-  <!-- Smile -->
   <path d="M91 127 Q100 134 109 127" stroke="#c0734a" stroke-width="2" fill="none" stroke-linecap="round"/>
-
-  <!-- Cheek blush -->
   <ellipse cx="80" cy="122" rx="7" ry="4" fill="#f0a07a" opacity="0.35"/>
   <ellipse cx="120" cy="122" rx="7" ry="4" fill="#f0a07a" opacity="0.35"/>
-
-  <!-- Shirt details - buttons -->
   <circle cx="100" cy="158" r="2" fill="rgba(255,255,255,0.4)"/>
   <circle cx="100" cy="167" r="2" fill="rgba(255,255,255,0.3)"/>
-
-  <!-- Shimmer overlay -->
   <circle cx="100" cy="100" r="100" fill="url(#shimmer)" opacity="0.15"/>
-
-  <!-- Animated ring -->
   <circle cx="100" cy="100" r="97" fill="none" stroke="url(#shimmer)" stroke-width="2" opacity="0.5">
     <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite"/>
     <animate attributeName="r" values="95;98;95" dur="3s" repeatCount="indefinite"/>
   </circle>
-
-  <!-- Floating sparkles -->
   <g opacity="0.7">
     <path d="M28 40 L30 34 L32 40 L38 42 L32 44 L30 50 L28 44 L22 42 Z" fill="#fbbf24">
       <animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="2.5s" repeatCount="indefinite"/>
@@ -197,9 +168,9 @@ export default function CustomerProfile() {
     frmData.append("gender", customer.gender);
     if (customer.profilePic) frmData.append("profilepic", customer.profilePic);
     try {
-      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//customer/create", frmData, {
-  headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" }
-});
+      const response = await axios.post(`${API_BASE}/customer/create`, frmData, {
+        headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
+      });
       alert(response.data.msg);
       setIsExistingCustomer(true);
     } catch { alert("Error saving profile"); }
@@ -208,7 +179,7 @@ export default function CustomerProfile() {
   const handleFind = async () => {
     if (!customer.email) return alert("Enter email to search");
     try {
-      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//customer/find", { email: customer.email }, authHeader());
+      const response = await axios.post(`${API_BASE}/customer/find`, { email: customer.email }, authHeader());
       if (response.data.status) {
         const data = response.data.doc;
         setCustomer({ email: data.email, name: data.name, address: data.address, city: data.city, state: data.state, gender: data.gender, profilePic: null });
@@ -234,9 +205,9 @@ export default function CustomerProfile() {
     frmData.append("gender", customer.gender);
     if (customer.profilePic) frmData.append("profilepic", customer.profilePic);
     try {
-     const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//customer/update", frmData, {
-  headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" }
-});
+      const response = await axios.post(`${API_BASE}/customer/update`, frmData, {
+        headers: { ...authHeader().headers, "Content-Type": "multipart/form-data" },
+      });
       alert(response.data.msg);
     } catch { alert("Error updating profile"); }
   };
@@ -244,7 +215,7 @@ export default function CustomerProfile() {
   const handleDelete = async () => {
     if (!customer.email) return alert("Enter email to delete");
     try {
-      const response = await axios.post("https://tailor-connect-new-fovv.vercel.app//customer/delete", { email: customer.email }, authHeader());
+      const response = await axios.post(`${API_BASE}/customer/delete`, { email: customer.email }, authHeader());
       alert(response.data.msg);
       setCustomer({ email: "", name: "", address: "", city: "", state: "", gender: "", profilePic: null });
       setPrev(defaultAvatar);
@@ -408,7 +379,6 @@ export default function CustomerProfile() {
               : "linear-gradient(145deg, #92400e 0%, #c49a2c 40%, #78350f 100%)",
           }}
         >
-          {/* Floating bg icons */}
           <div className="float-a absolute top-12 left-8" style={{ opacity: 0.2 }}>
             <GiSewingMachine size={38} color={dm ? "#fbbf24" : "white"} />
           </div>
@@ -422,15 +392,12 @@ export default function CustomerProfile() {
             <GiSewingMachine size={32} color={dm ? "#fbbf24" : "white"} />
           </div>
 
-          {/* Blobs */}
           <div className="absolute top-0 right-0 w-48 h-48 rounded-full"
             style={{ background: dm ? "#fbbf24" : "white", opacity: 0.07, transform: "translate(30%,-30%)" }} />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full"
             style={{ background: dm ? "#fbbf24" : "white", opacity: 0.07, transform: "translate(-30%,30%)" }} />
 
-          {/* Avatar */}
           <div className="relative z-10 flex flex-col items-center">
-            {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
               style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.22)", backdropFilter: "blur(10px)" }}>
               <FaUser size={10} color="#fde68a" />
@@ -439,7 +406,6 @@ export default function CustomerProfile() {
               </span>
             </div>
 
-            {/* Profile picture */}
             <div className="relative mb-4">
               <motion.div
                 whileHover={{ scale: 1.06 }}
@@ -448,8 +414,6 @@ export default function CustomerProfile() {
               >
                 <img src={prev || ""} alt="profile" className="w-full h-full object-cover" />
               </motion.div>
-
-              {/* Camera overlay */}
               <label
                 className="absolute bottom-1 right-1 w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
                 style={{ background: "linear-gradient(135deg,#c49a2c,#92400e)", border: "2px solid rgba(255,255,255,0.3)" }}
@@ -459,12 +423,10 @@ export default function CustomerProfile() {
               </label>
             </div>
 
-            {/* Name */}
             <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "22px", fontWeight: 700, color: "white", textAlign: "center", marginBottom: "6px" }}>
               {customer.name || "Customer Name"}
             </h3>
 
-            {/* Meta info */}
             <div className="flex flex-col items-center gap-1 mb-4">
               {(customer.city || customer.state) && (
                 <div className="flex items-center gap-1.5" style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "12px", color: "rgba(255,255,255,0.6)" }}>
@@ -486,7 +448,6 @@ export default function CustomerProfile() {
               )}
             </div>
 
-            {/* Status badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
               style={{ background: "rgba(251,191,36,0.15)", border: "1px solid rgba(251,191,36,0.35)" }}>
               <div className="w-1.5 h-1.5 rounded-full" style={{ background: isExistingCustomer ? "#4ade80" : "#fbbf24" }} />
@@ -495,7 +456,6 @@ export default function CustomerProfile() {
               </span>
             </div>
 
-            {/* Pills */}
             <div className="mt-5">
               {["🛍️ Client", "✂️ Tailoring", "⭐ Premium"].map((f, i) => (
                 <span key={i} className="feat-pill">{f}</span>
@@ -507,7 +467,6 @@ export default function CustomerProfile() {
         {/* ════════ RIGHT PANEL ════════ */}
         <div className="flex-1 flex flex-col justify-center p-8 lg:p-10 relative overflow-y-auto" style={{ maxHeight: "100vh" }}>
 
-          {/* Dark mode toggle */}
           <div className="absolute top-6 right-6 z-10">
             <button
               onClick={() => setDarkMode(!dm)}
@@ -523,7 +482,6 @@ export default function CustomerProfile() {
             </button>
           </div>
 
-          {/* Mobile avatar — shown only on small screens */}
           <div className="flex lg:hidden items-center gap-4 mb-6">
             <div className="relative">
               <motion.div whileHover={{ scale: 1.06 }} className="w-16 h-16 rounded-full overflow-hidden"
@@ -550,7 +508,6 @@ export default function CustomerProfile() {
             </div>
           </div>
 
-          {/* Heading */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
