@@ -8,7 +8,7 @@ import { useDarkMode } from "../src/context/DarkModeContext";
 import axios from "axios";
 
 // ─── API Base URL ─────────────────────────────────────────────────────────────
-const API_BASE = "https://tailor-connect-new-fovv.vercel.app";
+const API_BASE = "https://tailor-connect-new-mvxq.vercel.app";
 
 const ALL_NAV_LINKS = [
   { label: "Home",        path: "/",             icon: <FaHome size={13} />,  showFor: ["customer", "tailor", ""] },
