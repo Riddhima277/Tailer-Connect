@@ -5,8 +5,10 @@ import { GiSewingNeedle, GiSewingMachine } from "react-icons/gi";
 import { BsSun, BsMoon } from "react-icons/bs";
 import { useDarkMode } from "../src/context/DarkModeContext";
 
+// ─── API Base URL ─────────────────────────────────────────────────────────────
+const API_BASE = "https://tailor-connect-new-fovv.vercel.app";
+
 export default function RateAndReview() {
-  //const [darkMode, setDarkMode] = useState(true); 
   const { darkMode, setDarkMode } = useDarkMode();
   const [mobile, setMobile] = useState("");
   const [tailorName, setTailorName] = useState("");
@@ -22,14 +24,13 @@ export default function RateAndReview() {
 
   const dm = darkMode;
 
-  // ── onBlur → /review/findTailor ── UNCHANGED
   const handleMobileBlur = async () => {
     if (mobile.length !== 10) {
       setTailorName(""); setNameVisible(false); setNotFound(false); return;
     }
     setLookupLoading(true); setNotFound(false); setNameVisible(false);
     try {
-      const res = await axios.post("https://tailor-connect-new-fovv.vercel.app//review/findTailor", { contact: mobile });
+      const res = await axios.post(`${API_BASE}/review/findTailor`, { contact: mobile });
       if (res.data.status && res.data.doc) {
         setTailorName(res.data.doc.name);
         setNameVisible(true);
@@ -38,7 +39,6 @@ export default function RateAndReview() {
     finally { setLookupLoading(false); }
   };
 
-  // ── Submit → /review/create ── UNCHANGED
   const handleSubmit = async () => {
     if (!nameVisible || selectedStar === 0) {
       setShakeError(true);
@@ -47,7 +47,7 @@ export default function RateAndReview() {
     }
     setSubmitLoading(true);
     try {
-      await axios.post("https://tailor-connect-new-fovv.vercel.app//review/create", {
+      await axios.post(`${API_BASE}/review/create`, {
         tailorContact: mobile, star: selectedStar, review,
       });
       setTimeout(() => { setSubmitted(true); setSubmitLoading(false); }, 500);
@@ -179,7 +179,6 @@ export default function RateAndReview() {
               : "linear-gradient(145deg,#92400e 0%,#c49a2c 40%,#78350f 100%)",
           }}
         >
-          {/* Floating icons */}
           <div className="float-a absolute top-12 left-8" style={{ opacity: 0.2 }}>
             <GiSewingNeedle size={38} color={dm ? "#fbbf24" : "white"} />
           </div>
@@ -193,15 +192,12 @@ export default function RateAndReview() {
             <FaPen size={22} color={dm ? "#fbbf24" : "white"} />
           </div>
 
-          {/* Blobs */}
           <div className="absolute top-0 right-0 w-48 h-48 rounded-full"
             style={{ background: dm ? "#fbbf24" : "white", opacity: 0.07, transform: "translate(30%,-30%)" }} />
           <div className="absolute bottom-0 left-0 w-60 h-60 rounded-full"
             style={{ background: dm ? "#fbbf24" : "white", opacity: 0.06, transform: "translate(-30%,30%)" }} />
 
-          {/* Content */}
           <div className="relative z-10 text-center fade-up">
-            {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
               style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.22)", backdropFilter: "blur(10px)" }}>
               <FaStar size={10} color="#fde68a" />
@@ -210,7 +206,6 @@ export default function RateAndReview() {
               </span>
             </div>
 
-            {/* Big star display */}
             <div className="flex justify-center gap-1 mb-4">
               {[1,2,3,4,5].map(s => (
                 <FaStar key={s} size={28}
@@ -254,7 +249,7 @@ export default function RateAndReview() {
             </button>
           </div>
 
-          {/* Mobile logo (sm screens) */}
+          {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-5 lg:hidden">
             <FaCut style={{ color: "#c49a2c" }} size={14} />
             <span style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: "17px", color: dm ? "#fbbf24" : "#92400e" }}>
@@ -264,7 +259,6 @@ export default function RateAndReview() {
 
           {!submitted ? (
             <div className={shakeError ? "shake" : ""}>
-              {/* Heading */}
               <div className="mb-6 pr-10">
                 <p className="lbl" style={{ color: "#c49a2c" }}>Your Feedback</p>
                 <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "30px", fontWeight: 700, lineHeight: 1.1, color: dm ? "white" : "#1c0a00", marginBottom: "4px" }}>
@@ -300,7 +294,6 @@ export default function RateAndReview() {
                     )}
                   </div>
 
-                  {/* Verified badge */}
                   {nameVisible && (
                     <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-lg fade-up"
                       style={{ background: "rgba(74,222,128,0.08)", border: "1px solid rgba(74,222,128,0.25)" }}>
@@ -317,7 +310,6 @@ export default function RateAndReview() {
                     </div>
                   )}
 
-                  {/* Not found */}
                   {notFound && (
                     <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-lg fade-up"
                       style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)" }}>
@@ -391,16 +383,13 @@ export default function RateAndReview() {
                       Publishing...
                     </>
                   ) : (
-                    <>
-                      <FaPen size={12} /> PUBLISH REVIEW
-                    </>
+                    <><FaPen size={12} /> PUBLISH REVIEW</>
                   )}
                 </button>
               </div>
             </div>
 
           ) : (
-            /* ── Success screen ── */
             <div className="text-center fade-up py-4">
               <div style={{ fontSize: "56px", animation: "successPop 0.6s ease forwards", marginBottom: "12px" }}>🎉</div>
 
@@ -413,7 +402,6 @@ export default function RateAndReview() {
                 <span style={{ color: dm ? "white" : "#1c0a00", fontWeight: 600 }}>{tailorName}</span>
               </p>
 
-              {/* Stars display */}
               <div className="flex justify-center gap-1.5 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <FaStar key={i} size={22}
@@ -426,7 +414,6 @@ export default function RateAndReview() {
                 ))}
               </div>
 
-              {/* Review quote */}
               {review && (
                 <div className="mx-auto mb-6 px-5 py-4 rounded-xl max-w-xs"
                   style={{ background: dm ? "rgba(196,154,44,0.08)" : "rgba(196,154,44,0.06)", border: dm ? "1px solid rgba(196,154,44,0.15)" : "1px solid rgba(196,154,44,0.15)" }}>
