@@ -249,7 +249,7 @@ function login(req, res) {
       let token = jwt.sign(
   { email: user.email, userType: user.userType },
   process.env.SEC_KEY,
-  { expiresIn: "10m" }
+  { expiresIn: "7d" }
 );
 return res.status(200).json({
   msg: "Login Successful",
