@@ -20,7 +20,7 @@ import { GiSewingMachine } from "react-icons/gi";
 import { useDarkMode } from "../src/context/DarkModeContext";
 
 // ─── API Base URL ─────────────────────────────────────────────────────────────
-const API_BASE = "https://tailor-connect-new-mvxq.vercel.app";
+const API_BASE = "https://tailer-connect-backened.vercel.app/";
 
 const STATES = [
   "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh",
