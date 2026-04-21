@@ -7,47 +7,48 @@ import { BsSun, BsMoon } from "react-icons/bs";
 import { useDarkMode } from "../src/context/DarkModeContext";
 import axios from "axios";
 
+// ─── API Base URL ─────────────────────────────────────────────────────────────
+const API_BASE = "https://tailor-connect-new-fovv.vercel.app";
+
 const ALL_NAV_LINKS = [
-  { label: "Home", path: "/", icon: <FaHome size={13} />, showFor: ["customer", "tailor", ""] },
-  { label: "Find Tailor", path: "/FindTailor", icon: <FaSearch size={13} />, showFor: ["customer"] },
+  { label: "Home",        path: "/",             icon: <FaHome size={13} />,  showFor: ["customer", "tailor", ""] },
+  { label: "Find Tailor", path: "/FindTailor",   icon: <FaSearch size={13} />, showFor: ["customer"] },
   { label: "Rate & Review", path: "/RateAndReview", icon: <FaStar size={13} />, showFor: ["customer"] },
 ];
-
-
 
 export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
- //const [darkMode, setDarkMode] = useState(false);
- const { darkMode, setDarkMode } = useDarkMode();
+  const { darkMode, setDarkMode } = useDarkMode();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dm = darkMode;
 
   const handleLogout = async () => {
-  try {
-    await axios.post(
-      "https://tailor-connect-new-fovv.vercel.app//profile/logout",
-      {},
-      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    );
-  } catch (err) {
-    console.log("Logout error:", err);
-  } finally {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userType");
-    localStorage.removeItem("userEmail");
-    navigate("/ProfilePage", { state: { mode: "login" } });
-  }
-};
+    try {
+      await axios.post(
+        `${API_BASE}/profile/logout`,
+        {},
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+    } catch (err) {
+      console.log("Logout error:", err);
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userType");
+      localStorage.removeItem("userEmail");
+      navigate("/ProfilePage", { state: { mode: "login" } });
+    }
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
   const userType = localStorage.getItem("userType") || "";
-const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
+  const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
 
   const isActive = (path: string) =>
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
@@ -110,7 +111,6 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
         }
         .nav-link:hover::after,
         .nav-link.active::after { width: 60%; }
-
         .nav-link:hover { transform: translateY(-2px); }
 
         .mode-btn {
@@ -157,20 +157,14 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
           top: 0,
           zIndex: 100,
           background: scrolled
-            ? dm
-              ? "rgba(15,12,30,0.97)"
-              : "rgba(255,255,255,0.97)"
-            : dm
-              ? "rgba(15,12,30,0.85)"
-              : "rgba(255,255,255,0.85)",
+            ? dm ? "rgba(15,12,30,0.97)" : "rgba(255,255,255,0.97)"
+            : dm ? "rgba(15,12,30,0.85)" : "rgba(255,255,255,0.85)",
           borderBottom: dm
             ? "1px solid rgba(196,154,44,0.18)"
             : "1px solid rgba(196,154,44,0.2)",
           backdropFilter: "blur(20px)",
           boxShadow: scrolled
-            ? dm
-              ? "0 8px 32px rgba(0,0,0,0.4)"
-              : "0 8px 32px rgba(196,154,44,0.1)"
+            ? dm ? "0 8px 32px rgba(0,0,0,0.4)" : "0 8px 32px rgba(196,154,44,0.1)"
             : "none",
           transition: "all 0.4s ease",
           padding: "0 24px",
@@ -192,17 +186,12 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
             style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}
             onClick={() => navigate("/")}
           >
-            {/* Logo icon cluster */}
             <div style={{ position: "relative", width: "36px", height: "36px" }}>
               <div
                 style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "10px",
+                  width: "36px", height: "36px", borderRadius: "10px",
                   background: "linear-gradient(135deg, #c49a2c 0%, #92400e 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  display: "flex", alignItems: "center", justifyContent: "center",
                   boxShadow: "0 4px 14px rgba(196,154,44,0.4)",
                 }}
               >
@@ -210,33 +199,23 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
               </div>
               <div
                 style={{
-                  position: "absolute",
-                  top: "-4px",
-                  right: "-4px",
-                  width: "14px",
-                  height: "14px",
-                  borderRadius: "50%",
+                  position: "absolute", top: "-4px", right: "-4px",
+                  width: "14px", height: "14px", borderRadius: "50%",
                   background: dm ? "#0f0c1e" : "white",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  display: "flex", alignItems: "center", justifyContent: "center",
                   border: "1.5px solid rgba(196,154,44,0.5)",
                 }}
               >
                 <GiSewingMachine size={7} color="#c49a2c" />
               </div>
             </div>
-
-            {/* Brand text */}
             <div>
               <div
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "18px",
-                  fontWeight: 700,
+                  fontSize: "18px", fontWeight: 700,
                   color: dm ? "white" : "#1c0a00",
-                  lineHeight: 1,
-                  letterSpacing: "0.02em",
+                  lineHeight: 1, letterSpacing: "0.02em",
                 }}
               >
                 TailorConnect
@@ -244,12 +223,9 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
               <div
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "9px",
-                  fontWeight: 600,
-                  color: "#c49a2c",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  lineHeight: 1.2,
+                  fontSize: "9px", fontWeight: 600,
+                  color: "#c49a2c", letterSpacing: "0.14em",
+                  textTransform: "uppercase", lineHeight: 1.2,
                 }}
               >
                 Precision Crafted
@@ -258,14 +234,7 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
           </motion.div>
 
           {/* ── Desktop Nav Links ── */}
-          <div
-            className="hidden"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             {NAV_LINKS.map((link) => {
               const active = isActive(link.path);
               return (
@@ -276,20 +245,12 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
                   className={`nav-link${active ? " active" : ""}`}
                   onClick={() => navigate(link.path)}
                   style={{
-                    color: active
-                      ? "#c49a2c"
-                      : dm
-                        ? "rgba(255,255,255,0.65)"
-                        : "rgba(0,0,0,0.55)",
+                    color: active ? "#c49a2c" : dm ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.55)",
                     background: active
-                      ? dm
-                        ? "rgba(196,154,44,0.12)"
-                        : "rgba(196,154,44,0.1)"
+                      ? dm ? "rgba(196,154,44,0.12)" : "rgba(196,154,44,0.1)"
                       : "transparent",
                     border: active
-                      ? dm
-                        ? "1px solid rgba(196,154,44,0.25)"
-                        : "1px solid rgba(196,154,44,0.2)"
+                      ? dm ? "1px solid rgba(196,154,44,0.25)" : "1px solid rgba(196,154,44,0.2)"
                       : "1px solid transparent",
                   }}
                 >
@@ -301,9 +262,7 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
                     <motion.div
                       layoutId="activeIndicator"
                       style={{
-                        position: "absolute",
-                        inset: 0,
-                        borderRadius: "10px",
+                        position: "absolute", inset: 0, borderRadius: "10px",
                         background: "linear-gradient(135deg, rgba(196,154,44,0.08), rgba(146,64,14,0.06))",
                         zIndex: -1,
                       }}
@@ -321,55 +280,41 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
               onClick={() => setDarkMode(!dm)}
               className="mode-btn"
               style={{
-                width: "38px",
-                height: "38px",
-                borderRadius: "10px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: "38px", height: "38px", borderRadius: "10px",
+                display: "flex", alignItems: "center", justifyContent: "center",
                 background: dm ? "rgba(196,154,44,0.12)" : "rgba(146,64,14,0.07)",
                 border: dm ? "1px solid rgba(196,154,44,0.25)" : "1px solid rgba(146,64,14,0.14)",
-                color: dm ? "#fbbf24" : "#92400e",
-                fontSize: "15px",
+                color: dm ? "#fbbf24" : "#92400e", fontSize: "15px",
               }}
             >
               {dm ? <BsSun /> : <BsMoon />}
             </button>
 
             {userType && (
-    <button
-      onClick={handleLogout}
-      style={{
-        padding: "8px 16px",
-        borderRadius: "10px",
-        border: dm ? "1px solid rgba(239,68,68,0.35)" : "1px solid rgba(239,68,68,0.3)",
-        background: dm ? "rgba(239,68,68,0.12)" : "rgba(239,68,68,0.07)",
-        color: "#f87171",
-        fontFamily: "'DM Sans',sans-serif",
-        fontSize: "12px",
-        fontWeight: 600,
-        cursor: "pointer",
-        letterSpacing: "0.04em",
-        transition: "all 0.2s ease",
-      }}
-      onMouseOver={e => (e.currentTarget.style.background = "rgba(239,68,68,0.2)")}
-      onMouseOut={e => (e.currentTarget.style.background = dm ? "rgba(239,68,68,0.12)" : "rgba(239,68,68,0.07)")}
-    >
-      Log Out
-    </button>
-  )}
+              <button
+                onClick={handleLogout}
+                style={{
+                  padding: "8px 16px", borderRadius: "10px",
+                  border: dm ? "1px solid rgba(239,68,68,0.35)" : "1px solid rgba(239,68,68,0.3)",
+                  background: dm ? "rgba(239,68,68,0.12)" : "rgba(239,68,68,0.07)",
+                  color: "#f87171", fontFamily: "'DM Sans',sans-serif",
+                  fontSize: "12px", fontWeight: 600, cursor: "pointer",
+                  letterSpacing: "0.04em", transition: "all 0.2s ease",
+                }}
+                onMouseOver={e => (e.currentTarget.style.background = "rgba(239,68,68,0.2)")}
+                onMouseOut={e => (e.currentTarget.style.background = dm ? "rgba(239,68,68,0.12)" : "rgba(239,68,68,0.07)")}
+              >
+                Log Out
+              </button>
+            )}
 
             {/* Hamburger (mobile) */}
             <button
               className="hamburger-btn"
               onClick={() => setMenuOpen(!menuOpen)}
               style={{
-                width: "38px",
-                height: "38px",
-                borderRadius: "10px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: "38px", height: "38px", borderRadius: "10px",
+                display: "flex", alignItems: "center", justifyContent: "center",
                 background: dm ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
                 border: dm ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.08)",
                 color: dm ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.55)",
@@ -377,21 +322,8 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
             >
               {menuOpen ? <FaTimes size={14} /> : <FaBars size={14} />}
             </button>
-
-            {/* Divider + CTA (desktop) */}
-            <div
-              style={{
-                width: "1px",
-                height: "24px",
-                background: dm ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-                display: "none", // hide on mobile, show on desktop via inline override
-              }}
-            />
           </div>
         </div>
-
-        {/* ── Desktop: show nav links inline (reused via hidden trick) ── */}
-        {/* We put the links directly in the flex row above (md+) and show them via CSS below */}
       </motion.nav>
 
       {/* ── Mobile Dropdown Menu ── */}
@@ -403,13 +335,8 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
             exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              position: "fixed",
-              top: "64px",
-              left: "16px",
-              right: "16px",
-              zIndex: 99,
-              borderRadius: "16px",
-              padding: "12px",
+              position: "fixed", top: "64px", left: "16px", right: "16px",
+              zIndex: 99, borderRadius: "16px", padding: "12px",
               background: dm ? "rgba(15,12,30,0.98)" : "rgba(255,255,255,0.98)",
               border: dm ? "1px solid rgba(196,154,44,0.2)" : "1px solid rgba(196,154,44,0.18)",
               backdropFilter: "blur(20px)",
@@ -423,13 +350,9 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
             <div style={{ padding: "8px 12px 14px", display: "flex", alignItems: "center", gap: "10px" }}>
               <div
                 style={{
-                  width: "28px",
-                  height: "28px",
-                  borderRadius: "8px",
+                  width: "28px", height: "28px", borderRadius: "8px",
                   background: "linear-gradient(135deg, #c49a2c, #92400e)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >
                 <FaCut size={11} color="white" />
@@ -453,26 +376,16 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
                   onClick={() => { navigate(link.path); setMenuOpen(false); }}
                   style={{
                     color: active ? "#c49a2c" : dm ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
-                    background: active
-                      ? dm ? "rgba(196,154,44,0.12)" : "rgba(196,154,44,0.09)"
-                      : "transparent",
-                    border: active
-                      ? dm ? "1px solid rgba(196,154,44,0.22)" : "1px solid rgba(196,154,44,0.18)"
-                      : "1px solid transparent",
+                    background: active ? dm ? "rgba(196,154,44,0.12)" : "rgba(196,154,44,0.09)" : "transparent",
+                    border: active ? dm ? "1px solid rgba(196,154,44,0.22)" : "1px solid rgba(196,154,44,0.18)" : "1px solid transparent",
                     marginBottom: "4px",
                   }}
                 >
                   <span
                     style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      background: active
-                        ? "linear-gradient(135deg, #c49a2c, #92400e)"
-                        : dm ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)",
+                      width: "32px", height: "32px", borderRadius: "9px",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: active ? "linear-gradient(135deg, #c49a2c, #92400e)" : dm ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)",
                       color: active ? "white" : dm ? "rgba(196,154,44,0.6)" : "#c49a2c",
                       flexShrink: 0,
                     }}
@@ -488,27 +401,27 @@ const NAV_LINKS = ALL_NAV_LINKS.filter(link => link.showFor.includes(userType));
             })}
 
             {userType && (
-  <motion.button
-    initial={{ opacity: 0, x: -10 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ delay: NAV_LINKS.length * 0.06 }}
-    onClick={() => { handleLogout(); setMenuOpen(false); }}
-    style={{
-      display: "flex", alignItems: "center", gap: "12px",
-      padding: "14px 20px", borderRadius: "12px",
-      fontFamily: "'DM Sans',sans-serif", fontSize: "14px", fontWeight: 600,
-      cursor: "pointer", width: "100%", textAlign: "left",
-      background: "rgba(239,68,68,0.08)",
-      border: "1px solid rgba(239,68,68,0.2)",
-      color: "#f87171", marginBottom: "4px",
-    }}
-  >
-    <span style={{ width: "32px", height: "32px", borderRadius: "9px", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(239,68,68,0.15)", color: "#f87171", flexShrink: 0 }}>
-      ✕
-    </span>
-    Log Out
-  </motion.button>
-)}
+              <motion.button
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: NAV_LINKS.length * 0.06 }}
+                onClick={() => { handleLogout(); setMenuOpen(false); }}
+                style={{
+                  display: "flex", alignItems: "center", gap: "12px",
+                  padding: "14px 20px", borderRadius: "12px",
+                  fontFamily: "'DM Sans',sans-serif", fontSize: "14px", fontWeight: 600,
+                  cursor: "pointer", width: "100%", textAlign: "left",
+                  background: "rgba(239,68,68,0.08)",
+                  border: "1px solid rgba(239,68,68,0.2)",
+                  color: "#f87171", marginBottom: "4px",
+                }}
+              >
+                <span style={{ width: "32px", height: "32px", borderRadius: "9px", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(239,68,68,0.15)", color: "#f87171", flexShrink: 0 }}>
+                  ✕
+                </span>
+                Log Out
+              </motion.button>
+            )}
 
             {/* Footer */}
             <div style={{ padding: "12px 8px 4px", display: "flex", alignItems: "center", gap: "8px" }}>
