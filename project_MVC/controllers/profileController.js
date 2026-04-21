@@ -36,19 +36,15 @@ async function sendOtp(req, res) {
       await ProfileColRef.deleteOne({ email });
     }
 
-    // Remove any old OTP for this email from MongoDB
-    await OtpColRef.deleteOne({ email });
-
     const otp = generateOtp();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Save OTP to MongoDB
-    await OtpColRef.create({
-      email,
-      otp,
-      expiresAt,
-      userData: { email, password, userType, contact },
-    });
+    // Upsert OTP record — avoids duplicate key errors
+    await OtpColRef.findOneAndUpdate(
+      { email },
+      { otp, expiresAt, userData: { email, password, userType, contact } },
+      { upsert: true, new: true }
+    );
 
     // Send OTP email
     const name = email.split("@")[0];
@@ -57,7 +53,7 @@ async function sendOtp(req, res) {
     let jtoken = jwt.sign({ email }, process.env.SEC_KEY, { expiresIn: "10m" });
 
     transporter.sendMail({
-      from: '"TailorConnect ✂️" <your_gmail@gmail.com>',
+      from: `"TailorConnect ✂️" <${process.env.MAIL_USER}>`,
       to: email,
       subject: tmpl.subject,
       html: tmpl.html,
@@ -116,7 +112,7 @@ async function verifyOtp(req, res) {
     const name = email.split("@")[0];
     const tmpl = welcomeTemplate(name, userData.userType, email);
     transporter.sendMail({
-      from: '"TailorConnect ✂️" <your_gmail@gmail.com>',
+      from: `"TailorConnect ✂️" <${process.env.MAIL_USER}>`,
       to: email,
       subject: tmpl.subject,
       html: tmpl.html,
@@ -155,7 +151,7 @@ async function resendOtp(req, res) {
     const tmpl = resendOtpTemplate(name, otp);
 
     await transporter.sendMail({
-      from: '"TailorConnect ✂️" <your_gmail@gmail.com>',
+      from: `"TailorConnect ✂️" <${process.env.MAIL_USER}>`,
       to: email,
       subject: tmpl.subject,
       html: tmpl.html,
@@ -188,7 +184,7 @@ function signup(req, res) {
         var name = email.split("@")[0];
         var tmpl = welcomeTemplate(name, userType, email);
         transporter.sendMail({
-          from: '"TailorConnect ✂️" <your_gmail@gmail.com>',
+          from: `"TailorConnect ✂️" <${process.env.MAIL_USER}>`,
           to: email,
           subject: tmpl.subject,
           html: tmpl.html,
@@ -228,7 +224,7 @@ function login(req, res) {
       var name = email.split("@")[0];
       var tmpl = loginTemplate(name, email);
       transporter.sendMail({
-        from: '"TailorConnect ✂️" <your_gmail@gmail.com>',
+        from: `"TailorConnect ✂️" <${process.env.MAIL_USER}>`,
         to: email,
         subject: tmpl.subject,
         html: tmpl.html,
