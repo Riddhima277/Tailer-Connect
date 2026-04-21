@@ -1,7 +1,7 @@
 // controllers/profileController.js
 const jwt = require("jsonwebtoken");
 var ProfileColRef = require("../models/ProfileModel");
-var OtpColRef = require("../models/OtpModel");
+var OtpColRef = require("../models/OTPmodel");
 var transporter = require("../config/node_mailer");
 var {
   welcomeTemplate,
