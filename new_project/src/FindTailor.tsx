@@ -12,7 +12,7 @@ import { GiSewingMachine, GiSewingNeedle } from "react-icons/gi";
 import { useDarkMode } from "../src/context/DarkModeContext";
 
 // ─── API Base URL ─────────────────────────────────────────────────────────────
-const API_BASE = "https://tailer-connect-backened.vercel.app/";
+const API_BASE = "https://tailer-connect-backened.vercel.app";
 
 // ─── Axios ────────────────────────────────────────────────────────────────────
 const API = axios.create({ baseURL: API_BASE });

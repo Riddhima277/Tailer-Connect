@@ -12,7 +12,7 @@ import { GiSewingNeedle, GiSewingMachine, GiSewingString } from "react-icons/gi"
 import { useDarkMode } from "../src/context/DarkModeContext";
 
 // ─── API Base URL ─────────────────────────────────────────────────────────────
-const API_BASE = "https://tailer-connect-backened.vercel.app/";
+const API_BASE = "https://tailer-connect-backened.vercel.app";
 
 const platformOptions = ["Website", "Instagram", "Facebook", "YouTube"];
 

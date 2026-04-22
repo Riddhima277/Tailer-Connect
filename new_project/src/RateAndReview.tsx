@@ -6,7 +6,7 @@ import { BsSun, BsMoon } from "react-icons/bs";
 import { useDarkMode } from "../src/context/DarkModeContext";
 
 // ─── API Base URL ─────────────────────────────────────────────────────────────
-const API_BASE = "https://tailer-connect-backened.vercel.app/";
+const API_BASE = "https://tailer-connect-backened.vercel.app";
 
 export default function RateAndReview() {
   const { darkMode, setDarkMode } = useDarkMode();
