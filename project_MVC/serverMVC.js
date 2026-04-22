@@ -16,9 +16,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(fileuploader());
 app.use(cors());
 
-connectToMongoDB();
+// ─── Ensure MongoDB connected before every request ────────────────────────────
+app.use(async (req, res, next) => {
+  try {
+    await connectToMongoDB();
+    next();
+  } catch (err) {
+    console.error("DB connection error:", err.message);
+    res.status(500).json({ msg: "Database connection failed", detail: err.message });
+  }
+});
 
-// Add this route BEFORE your other routes
+// ─── Test route ───────────────────────────────────────────────────────────────
 app.get("/test-env", (req, res) => {
   res.json({
     mongo: process.env.MONGO_URI ? "SET" : "NOT SET",
