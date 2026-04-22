@@ -18,6 +18,15 @@ app.use(cors());
 
 connectToMongoDB();
 
+// Add this route BEFORE your other routes
+app.get("/test-env", (req, res) => {
+  res.json({
+    mongo: process.env.MONGO_URI ? "SET" : "NOT SET",
+    mail: process.env.MAIL_USER ? "SET" : "NOT SET",
+    sec: process.env.SEC_KEY ? "SET" : "NOT SET",
+  });
+});
+
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use("/profile",     profileRouter);
 app.use("/customer",    customer_pro);
